@@ -758,7 +758,6 @@ function Slideshow() {
         {/*fullscreen image with scaling*/}
         <img
           src={current.src}
-          loading = 'lazy',
           alt={`${current.artist} concert`}
           style={{
             width: '100%',
