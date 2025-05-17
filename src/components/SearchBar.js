@@ -1,111 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useDebounce } from './useDebounce';
-import StatsPanel from './StatsPanel';
 import './SearchBar.css';
-import SetlistFMCredit from './SetlistFMCredit';
 
+//import to handle nav to results page
+import { useNavigate } from 'react-router-dom';
 
-
+//update to be simple input component rather than handling the result rendering too
 function SearchBar() {
   //holds which dropdown range value is selected
   const [range, setRange] = useState("20");
   //store artist input from user
   const [artistName, setArtistName] = useState('');
-  const [submittedArtist, setSubmittedArtist] = useState('');
 
-  //track when user searched to force statspanel to re-render even for same artist
+  const debouncedArtist = useDebounce(artistName, 300);
 
-  const debouncedArtist = useDebounce(artistName, 500);
 
-  //store results from backend
-  const [encores, setEncores] = useState([]);
-  const [rarest, setRarest] = useState([]);
-  const [averageLength, setAverageLength] = useState(null);
-  const [openers, setOpeners] = useState([]);
+  const navigate = useNavigate();
 
-  //show loading while data being fetched
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const saved = sessionStorage.getItem('lastArtistInput');
+    if (saved) setArtistName(saved);
+  }, []);
 
-//react hook that runs side effects like HTTP requests
-//block to address issue of frontend not updating searches when user changes input
-/*useEffect(() => {
-  //dont fetch when artist input empty
-  if (!debouncedArtist.trim()) return;
+  useEffect(() => {
+    sessionStorage.setItem('lastArtistInput', artistName);
+  }, [artistName]);
 
-  //clear old results and show loading
-  setEncores([]);
-  setOpeners([]);
-  setRarest([]);
-  setLoading(true);
-  setAverageLength(null);
-
-  console.log(`fetching stats for ${debouncedArtist} with range=${range}`);
-  //fetch only runs when artist or range changes
-
-  //new single fetch to combined stats endpoint
-  fetch(`/api/setlists/stats?artist=${debouncedArtist}&setlistRange=${range}`)
-    //when backend responds with json, store data in encore songs
-    .then(response => response.json())
-        .then(data => {
-           console.log("RAW stats response:", data);
-
-            setEncores(Array.isArray(data.encores) ? data.encores : []);
-            setOpeners(Array.isArray(data.openers) ? data.openers : []);
-            setRarest(Array.isArray(data.rarest) ? data.rarest : []);
-
-            const avg = parseFloat(data.averageLength);
-            setAverageLength(!isNaN(avg) ? avg : null);
-
-            setLoading(false);
-        })
-    //catch bad responses and log them
-    .catch(error => {
-          console.error("Error fetching stats:", error);
-          setLoading(false);
-        });
-}, [debouncedArtist, range]);
-*/
   //trigger on search click
-  const handleSearch = async () => {
-    //skip empty input
-    if (!artistName.trim())
-        return;
+    const handleSearch = () => {
+      if (!debouncedArtist.trim())
+      return;
 
-        //fix issue of statpanel title dynamically rendering
-    setSubmittedArtist(artistName);
-
-    setLoading(true);
-    setEncores([]);
-    setOpeners([]);
-    setRarest([]);
-    setAverageLength(null);
-    try {
-      //fetch all stats from consolidated backend endpoint
-      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/setlists/stats?artist=${artistName}&setlistRange=${range}`);
-      const data = await res.json();
-
-      console.log("Stats API response:", data);
-
-      //handle possible invalid values
-      setEncores(Array.isArray(data.encores) ? data.encores : []);
-      setOpeners(Array.isArray(data.openers) ? data.openers : []);
-      setRarest(Array.isArray(data.rarest) ? data.rarest : []);
-
-      const avg = parseFloat(data.averageLength);
-      setAverageLength(!isNaN(avg) ? avg : null);
-
-    } catch (err) {
-      console.error("Error fetching setlist data:", err);
-    }
-    finally {
-    setLoading(false);
-    }
-  };
-
-//confirm what frontend actually received to debug
-console.log("Encore songs:", encores);
-console.log("Rarest songs:", rarest);
-console.log("Avg length:", averageLength);
+      //navigate to ResultsPage and pass artist and range as URL parameters
+      navigate(`/results?artist=${encodeURIComponent(artistName)}&range=${range}`);
+    };
 
   return (
     <div
@@ -124,13 +52,16 @@ console.log("Avg length:", averageLength);
         padding: '0.5rem',
         //ensures nothing sits over the caption
         paddingBottom: '90px',
-        // removed gap to eliminate extra space between search and stats
       }}
     >
+    {/*block for search input ui*/}
       <div
         className="search-bar-container"
-        style={{ marginBottom: '0rem' }}
+        style={{
+        marginBottom: '0rem'
+        }}
       >
+      {/*artist input box*/}
         <input
           type="text"
           placeholder="Enter Artist Name for Setlist Insights"
@@ -138,6 +69,7 @@ console.log("Avg length:", averageLength);
           onChange={(e) => setArtistName(e.target.value)}
           className="search-input"
         />
+        {/*range selection dropdown*/}
         <label htmlFor="range-select">Select data range:</label>
         <select
           id="range-select"
@@ -150,41 +82,13 @@ console.log("Avg length:", averageLength);
           <option value="all">ALL TIME STATS!!! (May take 60+ seconds to process due to Setlist.FM API rate limit)</option>
         </select>
 
+        {/*search button that triggers the redirect to results*/}
         <button onClick={handleSearch} className="search-button">
           Search
         </button>
       </div>
-
-      <div
-        className="results-panel"
-        style={{
-          overflow: 'auto',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          // supposed to remove any gap before stats panel- why still gap
-          marginTop: '0',
-        }}
-      >
-        {loading && <p className="loading-message">Loading stats...</p>}
-
-        {!loading && submittedArtist && (
-          <>
-            <StatsPanel
-              averageLength={averageLength}
-              encores={encores}
-              openers={openers}
-              rarest={rarest}
-              artistName={submittedArtist}
-              range={range}
-            />
-            <SetlistFMCredit />
-          </>
-        )}
       </div>
-    </div>
   );
 }
-
+//export this component so it can be used in Home.js
 export default SearchBar;
