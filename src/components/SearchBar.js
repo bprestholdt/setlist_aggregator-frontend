@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDebounce } from './useDebounce';
 import './SearchBar.css';
 
+
 //import to handle nav to results page
 import { useNavigate } from 'react-router-dom';
 
@@ -28,8 +29,7 @@ function SearchBar() {
 
   //trigger on search click
     const handleSearch = () => {
-      if (!debouncedArtist.trim())
-      return;
+      if (!debouncedArtist.trim()) return;
 
       //navigate to ResultsPage and pass artist and range as URL parameters
       navigate(`/results?artist=${encodeURIComponent(artistName)}&range=${range}`);
