@@ -192,6 +192,7 @@ function ResultsPage() {
             encores={encores}
             openers={openers}
             rarest={rarest}
+            mostPlayed={mostPlayed}
             artistName={artist}
             range={range}
           />
