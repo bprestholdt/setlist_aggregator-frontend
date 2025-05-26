@@ -75,7 +75,7 @@ const images = [
       artist: 'David Bowie',
       date:null,
       location: null,
-      attribution: 'Photo by [Vértes György](https://commons.wikimedia.org/wiki/File:David_Bowie_RGB_13X18.jpg#/media/File:David_Bowie_RGB_13X18.jpg) / [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)'
+      attribution: 'Photo by [Vértes György](https://commons.wikimedia.org/wiki/File:David_Bowie_RGB_13X18.jpg) / [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)'
   },
   {
       src: '/images/Bowie2.jpeg',
@@ -512,8 +512,8 @@ const images = [
   attribution: 'Photo by [Jared Vincent](https://commons.wikimedia.org/wiki/File:Ween-Montreal07.jpg) / [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)'
 },
 {
-  src: '/images/McLusky.jpg',
-  artist: 'McLusky',
+  src: '/images/Mclusky.jpg',
+  artist: 'Mclusky',
   date: '2004-06-15',
   location: 'Southgate House, Newport, Kentucky',
   attribution: 'Photo by [Kevin D. Hartnell](https://commons.wikimedia.org/wiki/File:Andy_%27falco%27_falkous_mcLusky_newport_ky.jpg) / [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)'
@@ -525,13 +525,7 @@ const images = [
   location: null,
   attribution: 'Photo by [Ted Van Pelt](https://commons.wikimedia.org/wiki/File:Courtney_Love_Hole_(4752517075).jpg) / [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)'
 },
-{
-  src: '/images/FionaApple.jpg',
-  artist: 'Fiona Apple',
-  date: '2012-10-12',
-  location: null,
-  attribution: 'Photo by [Cara Lynn Martha](https://commons.wikimedia.org/wiki/File:Fiona_Apple_live_2012.jpg) / [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)'
-},
+
 {
   src: '/images/Melvins.jpg',
   artist: 'Melvins',
