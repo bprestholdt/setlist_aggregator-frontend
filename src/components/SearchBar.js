@@ -46,7 +46,7 @@ function SearchBar() {
         maxHeight: 'calc(100vh - 80px)',
         width: '100%',
         position: 'relative',
-        zIndex: '10',
+        zIndex: '2',
         overflowY: 'auto',
         boxSizing: 'border-box',
         padding: '0.5rem',

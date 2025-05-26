@@ -56,7 +56,14 @@ function ResultsPage() {
       try {
         //send GET req to consolidated backend API endpoint using env variable that handles local vs deployment
         const result = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/setlists/stats?artist=${artist}&setlistRange=${range}`);
-        //parse JSON response
+
+        //check and parse JSON response
+        if (!result.ok) {
+          const text = await result.text(); // catch HTML or plain text errors
+          console.error("Backend error response:", text);
+          throw new Error(`Stats API returned status ${result.status}`);
+        }
+
         const data = await result.json();
 
         console.log("Stats API response:", data);

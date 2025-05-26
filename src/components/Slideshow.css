@@ -34,7 +34,7 @@
   font-size: 0.9rem;
   max-width: 80%;
   line-height: 1.3rem;
-  z-index: 2;
+  z-index: 4;
   pointer-events: auto;
   /*ensure it appears above image and other panels */
   text-shadow: 0px 0px 5px #000;

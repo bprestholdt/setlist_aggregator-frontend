@@ -1,12 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchBar from '../components/SearchBar';
 import Slideshow from '../components/Slideshow';
+import '../components/Slideshow.css';
+
+//import slideshow images
+import images from '../components/slideshowImages';
+
+//moved slideshow logic and caption to home in order to make all links clickable
+
+// helper to shuffle photo array
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Helper function to convert Markdown-style links in attribution to HTML
+function formatAttribution(markdown) {
+  if (!markdown) return '';
+  return markdown.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+}
 
 function Home() {
+  //shuffle images once on initial load
+  const [shuffledImages] = useState(() => shuffleArray(images));
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+      const interval = setInterval(() => {
+        setIndex((i) => (i + 1) % shuffledImages.length);
+      }, 4300); //change every 4 seconds
+      return () => clearInterval(interval);
+    }, [shuffledImages]);
+
+    const current = shuffledImages[index];
+
   return (
     <div style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
       {/*full-screen rotating slideshow in background*/}
-      <Slideshow />
+      <Slideshow current = {current} />
 
       {/*overlay on top of slideshow*/}
       <div
@@ -50,6 +85,38 @@ function Home() {
         </h1>
         <SearchBar />
       </div>
+
+      {/*caption at bottom right is now clickable*/}
+            <div
+              className="slideshow-caption"
+              style={{
+                position: 'absolute',
+                bottom: '1rem',
+                right: '1rem',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: 'white',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.5rem',
+                fontSize: '0.9rem',
+                maxWidth: '80%',
+                lineHeight: '1.3rem',
+                zIndex: 10,
+                pointerEvents: 'auto',
+                textShadow: '0px 0px 5px #000',
+              }}
+            >
+              <div>
+                {current.artist} – {current.date}
+                {current.location ? ` @ ${current.location}` : ''}
+              </div>
+              {current.attribution && (
+                <small
+                  dangerouslySetInnerHTML={{
+                    __html: formatAttribution(current.attribution),
+                  }}
+                />
+              )}
+            </div>
     </div>
   );
 }
