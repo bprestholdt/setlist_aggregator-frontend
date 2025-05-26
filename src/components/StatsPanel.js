@@ -2,7 +2,7 @@ import React from 'react';
 import './StatsPanel.css';
 import '../App.css';
 
-function StatsPanel({ averageLength, encores, rarest, openers, artistName, range }) {
+function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artistName, range }) {
   const rangeText = range === "all" ? "entire setlist history" : `last ${range} shows`;
 
   return (
@@ -90,6 +90,21 @@ function StatsPanel({ averageLength, encores, rarest, openers, artistName, range
             <p>Rarest Data unavailable</p>
           )}
         </div>
+
+        <div className="stat-card">
+                  <h3>Most Played Songs</h3>
+                  {Array.isArray(mostPlayed) && mostPlayed.length > 0 ? (
+                    <ol>
+                      {mostPlayed.map((song, index) => (
+                        <li key={index}>
+                          {song.title} ({song.count}x)
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p>Most Played Data unavailable</p>
+                  )}
+                </div>
       </div>
     </div>
   );

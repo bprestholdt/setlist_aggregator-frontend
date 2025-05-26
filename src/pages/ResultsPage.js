@@ -27,12 +27,14 @@ function ResultsPage() {
   const [rarest, setRarest] = useState([]);
   const [averageLength, setAverageLength] = useState(null);
   const [openers, setOpeners] = useState([]);
+  const [mostPlayed, setMostPlayed] = useState([]);
 
   //confirm what frontend actually received to debug
   console.log("Encore songs:", encores);
   console.log("Rarest songs:", rarest);
   console.log("Avg length:", averageLength);
   console.log("Opener songs:", openers);
+  console.log("Most played songs:", mostPlayed);
 
   //hook that runs the fetch when URL changes
   useEffect(() => {
@@ -51,6 +53,7 @@ function ResultsPage() {
       setEncores([]);
       setRarest([]);
       setOpeners([]);
+      setMostPlayed([]);
       setAverageLength(null);
 
       try {
@@ -72,6 +75,7 @@ function ResultsPage() {
         setEncores(Array.isArray(data.encores) ? data.encores : []);
         setRarest(Array.isArray(data.rarest) ? data.rarest : []);
         setOpeners(Array.isArray(data.openers) ? data.openers : []);
+        setMostPlayed(Array.isArray(data.mostPlayed) ? data.mostPlayed : []);
         const avg = parseFloat(data.averageLength);
         setAverageLength(!isNaN(avg) ? avg : null);
       }
