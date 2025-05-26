@@ -37,14 +37,6 @@ function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artis
       )}
 
       <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Average Songs Per Show</h3>
-          {typeof averageLength === 'number' && !isNaN(averageLength) ? (
-            <p>{averageLength.toFixed(2)} songs per show</p>
-          ) : (
-            <p>Average setlist length not available</p>
-          )}
-        </div>
 
         <div className="stat-card">
           <h3>Top Encore Songs</h3>
@@ -104,7 +96,15 @@ function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artis
                   ) : (
                     <p>Most Played Data unavailable</p>
                   )}
-                </div>
+          </div>
+          <div className="stat-card">
+                    <h3>Average Songs Per Show</h3>
+                    {typeof averageLength === 'number' && !isNaN(averageLength) ? (
+                      <p>{averageLength.toFixed(2)} songs per show</p>
+                    ) : (
+                      <p>Average setlist length not available</p>
+                    )}
+                  </div>
       </div>
     </div>
   );

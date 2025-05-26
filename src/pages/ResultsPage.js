@@ -129,13 +129,17 @@ function ResultsPage() {
   return (
     <div
       style={{
-        paddingTop: '6rem',
-        paddingBottom: '5rem',
+        paddingTop: '1rem',
+        paddingBottom: '4rem',
         minHeight: '100vh',
         color: 'white',
         backgroundImage: loading ? 'none' : `url(${backgroundImageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative',
+        boxSizing: 'border-box',
       }}
     >
       {/* loading message glowing red*/}
@@ -168,8 +172,14 @@ function ResultsPage() {
       {/* after loading complete, pass stats as props to StatsPanel component */}
       {!loading && artist && (
         <>
-        {/*back button*/}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        {/*back button always visible when not loading*/}
+        <div style={{
+          position: 'absolute',
+          top: '1rem',
+          left: '1rem',
+          zIndex: 10,
+          marginBottom: '1rem',
+         }}>
           <button
             onClick={() => window.history.back()}
             style={{
@@ -187,6 +197,7 @@ function ResultsPage() {
             ⬅ Back to Search
           </button>
         </div>
+
           <StatsPanel
             averageLength={averageLength}
             encores={encores}
