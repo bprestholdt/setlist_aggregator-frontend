@@ -174,11 +174,9 @@ function ResultsPage() {
         <>
         {/*back button always visible when not loading*/}
         <div style={{
-          position: 'absolute',
-          top: '1rem',
-          left: '1rem',
-          zIndex: 10,
-          marginBottom: '1rem',
+          padding: '1rem 1rem 0 1rem',
+          width: '100%',
+          boxSizing: 'border-box'
          }}>
           <button
             onClick={() => window.history.back()}
