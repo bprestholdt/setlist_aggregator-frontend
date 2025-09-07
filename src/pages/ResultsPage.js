@@ -165,7 +165,7 @@ function ResultsPage() {
        }}
         className="loading-message"
         >
-        Loading Some Stats That Will Blow Your G******N MIND!!!!
+        Loading Some Stats That Will Blow Your MIND!!!!
         </div>
       )}
 
