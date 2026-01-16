@@ -133,7 +133,7 @@ function ResultsPage() {
     //call it immediately when page loads
     fetchStats();
     fetchArtistImage();
-  }, [location]); //run API fetch again if URL changes any parameter
+  }, [location, params]); //run API fetch again if URL changes any parameter
 
   //return full page styled container holding results
   //full screen background image-
@@ -148,7 +148,6 @@ function ResultsPage() {
         backgroundImage: loading ? 'none' : (backgroundImageUrl ? `url(${backgroundImageUrl})` : generateArtistGradient(artist)),
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
         backgroundRepeat: 'no-repeat',
         position: 'relative',
         boxSizing: 'border-box',
