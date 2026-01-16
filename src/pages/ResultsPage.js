@@ -5,6 +5,18 @@ import { useSearchParams, useLocation } from 'react-router-dom';
 import StatsPanel from '../components/StatsPanel';
 import SetlistFMCredit from '../components/SetlistFMCredit';
 
+//generate a consistent gradient based on artist name
+function generateArtistGradient(artistName) {
+  if (!artistName) return 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+  let hash = 0;
+  for (let i = 0; i < artistName.length; i++) {
+    hash = artistName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue1 = Math.abs(hash % 360);
+  const hue2 = (hue1 + 40) % 360;
+  return `linear-gradient(135deg, hsl(${hue1}, 30%, 15%) 0%, hsl(${hue2}, 40%, 20%) 50%, hsl(${hue1}, 35%, 12%) 100%)`;
+}
+
 function ResultsPage() {
 
     //get paramaters and location from react router
@@ -16,7 +28,7 @@ function ResultsPage() {
     const range = params.get('range');
 
     //background image for page
-    const [backgroundImageUrl, setBackgroundImageUrl] = useState('/images/default_backgroundRickRoss.jpg');
+    const [backgroundImageUrl, setBackgroundImageUrl] = useState(null);
 
 
   //show loading while data being fetched
@@ -110,11 +122,11 @@ function ResultsPage() {
           setBackgroundImageUrl(image);
           console.log("Fetched artist image:", image);
         } else {
-          setBackgroundImageUrl('/images/default_backgroundRickRoss.jpg');
+          setBackgroundImageUrl(null);
         }
       } catch (err) {
         console.warn("Could not load image for artist:", err);
-        setBackgroundImageUrl('/images/default_backgroundRickRoss.jpg');
+        setBackgroundImageUrl(null);
       }
     }
 
@@ -133,7 +145,7 @@ function ResultsPage() {
         paddingBottom: '4rem',
         minHeight: '100vh',
         color: 'white',
-        backgroundImage: loading ? 'none' : `url(${backgroundImageUrl})`,
+        backgroundImage: loading ? 'none' : (backgroundImageUrl ? `url(${backgroundImageUrl})` : generateArtistGradient(artist)),
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
