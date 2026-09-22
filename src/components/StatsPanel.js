@@ -2,6 +2,26 @@ import React from 'react';
 import './StatsPanel.css';
 import '../App.css';
 
+//one ranked song list card (encores, openers, rarest, most played share the same layout)
+function SongListCard({ title, songs, emptyText }) {
+  return (
+    <div className="stat-card">
+      <h3>{title}</h3>
+      {Array.isArray(songs) && songs.length > 0 ? (
+        <ol>
+          {songs.map((song, index) => (
+            <li key={index}>
+              {song.title} ({song.count}x)
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p>{emptyText}</p>
+      )}
+    </div>
+  );
+}
+
 function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artistName, range }) {
   const rangeText = range === "all" ? "entire setlist history" : `last ${range} shows`;
 
@@ -38,73 +58,19 @@ function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artis
 
       <div className="stats-grid">
 
-        <div className="stat-card">
-          <h3>Top Encore Songs</h3>
-          {Array.isArray(encores) && encores.length > 0 ? (
-            <ol>
-              {encores.map((song, index) => (
-                <li key={index}>
-                  {song.title} ({song.count}x)
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p>Encore Data unavailable</p>
-          )}
-        </div>
+        <SongListCard title="Top Encore Songs" songs={encores} emptyText="Encore Data unavailable" />
+        <SongListCard title="Top Opener Songs" songs={openers} emptyText="Opener Data unavailable" />
+        <SongListCard title="Rarest Songs" songs={rarest} emptyText="Rarest Data unavailable" />
+        <SongListCard title="Most Played Songs" songs={mostPlayed} emptyText="Most Played Data unavailable" />
 
         <div className="stat-card">
-          <h3>Top Opener Songs</h3>
-          {Array.isArray(openers) && openers.length > 0 ? (
-            <ol>
-              {openers.map((song, index) => (
-                <li key={index}>
-                  {song.title} ({song.count}x)
-                </li>
-              ))}
-            </ol>
+          <h3>Average Songs Per Show</h3>
+          {typeof averageLength === 'number' && !isNaN(averageLength) ? (
+            <p>{averageLength.toFixed(2)} songs per show</p>
           ) : (
-            <p>Opener Data unavailable</p>
+            <p>Average setlist length not available</p>
           )}
         </div>
-
-        <div className="stat-card">
-          <h3>Rarest Songs</h3>
-          {Array.isArray(rarest) && rarest.length > 0 ? (
-            <ol>
-              {rarest.map((song, index) => (
-                <li key={index}>
-                  {song.title} ({song.count}x)
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p>Rarest Data unavailable</p>
-          )}
-        </div>
-
-        <div className="stat-card">
-                  <h3>Most Played Songs</h3>
-                  {Array.isArray(mostPlayed) && mostPlayed.length > 0 ? (
-                    <ol>
-                      {mostPlayed.map((song, index) => (
-                        <li key={index}>
-                          {song.title} ({song.count}x)
-                        </li>
-                      ))}
-                    </ol>
-                  ) : (
-                    <p>Most Played Data unavailable</p>
-                  )}
-          </div>
-          <div className="stat-card">
-                    <h3>Average Songs Per Show</h3>
-                    {typeof averageLength === 'number' && !isNaN(averageLength) ? (
-                      <p>{averageLength.toFixed(2)} songs per show</p>
-                    ) : (
-                      <p>Average setlist length not available</p>
-                    )}
-                  </div>
       </div>
     </div>
   );

@@ -41,13 +41,6 @@ function ResultsPage() {
   const [openers, setOpeners] = useState([]);
   const [mostPlayed, setMostPlayed] = useState([]);
 
-  //confirm what frontend actually received to debug
-  console.log("Encore songs:", encores);
-  console.log("Rarest songs:", rarest);
-  console.log("Avg length:", averageLength);
-  console.log("Opener songs:", openers);
-  console.log("Most played songs:", mostPlayed);
-
   //hook that runs the fetch when URL changes
   useEffect(() => {
     //fetch twice for safety
@@ -81,8 +74,6 @@ function ResultsPage() {
 
         const data = await result.json();
 
-        console.log("Stats API response:", data);
-
         //store response data in the state using values returned from backend
         setEncores(Array.isArray(data.encores) ? data.encores : []);
         setRarest(Array.isArray(data.rarest) ? data.rarest : []);
@@ -103,24 +94,17 @@ function ResultsPage() {
   //fetch artist image from last.fm API
   async function fetchArtistImage() {
   try {
-  console.log("Fetching artist image from Last.fm for:", artist);
-
   const response = await fetch (
   `https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${encodeURIComponent(artist)}&api_key=${process.env.REACT_APP_LASTFM_API_KEY}&format=json`
   );
 
   const data = await response.json();
 
-  console.log("Last.fm response:", data);
-
   //attempt to find the largest available image
   const image = data?.artist?.image?.find(img => img.size === 'extralarge')?.['#text'];
 
-  console.log("Extracted image URL:", image);
-
   if (image && image.startsWith('http') && !image.includes('lastfm') && !image.includes('star')) {
           setBackgroundImageUrl(image);
-          console.log("Fetched artist image:", image);
         } else {
           setBackgroundImageUrl(null);
         }
@@ -161,7 +145,6 @@ function ResultsPage() {
         fontSize: '3rem',
         fontWeight: '900',
         color: '#fff',
-        backgroundColor: '#ff0000',
         textTransform: 'uppercase',
         padding: '2rem',
         margin: '4rem auto',
