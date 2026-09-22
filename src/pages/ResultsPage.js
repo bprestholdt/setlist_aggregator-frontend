@@ -48,6 +48,10 @@ function ResultsPage() {
   const [consistency, setConsistency] = useState(null);
   const [transitions, setTransitions] = useState([]);
   const [bustouts, setBustouts] = useState([]);
+  const [showLengths, setShowLengths] = useState(null);
+  const [touringPace, setTouringPace] = useState(null);
+  const [rotation, setRotation] = useState([]);
+  const [newSongs, setNewSongs] = useState([]);
 
   //hook that runs the fetch when URL changes
   useEffect(() => {
@@ -76,6 +80,10 @@ function ResultsPage() {
       setConsistency(null);
       setTransitions([]);
       setBustouts([]);
+      setShowLengths(null);
+      setTouringPace(null);
+      setRotation([]);
+      setNewSongs([]);
 
       try {
         //send GET req to consolidated backend API endpoint using env variable that handles local vs deployment
@@ -99,6 +107,10 @@ function ResultsPage() {
         setConsistency(data.consistency && typeof data.consistency === 'object' ? data.consistency : null);
         setTransitions(Array.isArray(data.transitions) ? data.transitions : []);
         setBustouts(Array.isArray(data.bustouts) ? data.bustouts : []);
+        setShowLengths(data.showLengths && typeof data.showLengths === 'object' ? data.showLengths : null);
+        setTouringPace(data.touringPace && typeof data.touringPace === 'object' ? data.touringPace : null);
+        setRotation(Array.isArray(data.rotation) ? data.rotation : []);
+        setNewSongs(Array.isArray(data.newSongs) ? data.newSongs : []);
         const avg = parseFloat(data.averageLength);
         setAverageLength(!isNaN(avg) ? avg : null);
       }
@@ -254,6 +266,10 @@ function ResultsPage() {
               consistency={consistency}
               transitions={transitions}
               bustouts={bustouts}
+              showLengths={showLengths}
+              touringPace={touringPace}
+              rotation={rotation}
+              newSongs={newSongs}
               artistName={artist}
               range={range}
             />

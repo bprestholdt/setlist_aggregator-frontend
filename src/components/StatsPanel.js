@@ -23,6 +23,56 @@ function SongListCard({ title, songs, emptyText, formatCount = (count) => `${cou
   );
 }
 
+//turn "2026-06-01" into "Jun 1, 2026" (built from parts so the date doesn't shift with time zones)
+function formatDate(isoDate) {
+  if (!isoDate) return '';
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+//card with the longest and shortest show in the range
+function ShowLengthsCard({ showLengths }) {
+  return (
+    <div className="stat-card">
+      <h3>Longest &amp; Shortest Show</h3>
+      {showLengths ? (
+        <ul className="stat-details">
+          <li><strong>Longest:</strong> {showLengths.longestSongs} songs ({formatDate(showLengths.longestDate)})</li>
+          <li><strong>Shortest:</strong> {showLengths.shortestSongs} songs ({formatDate(showLengths.shortestDate)})</li>
+        </ul>
+      ) : (
+        <p>Show length data unavailable</p>
+      )}
+    </div>
+  );
+}
+
+//card with how often the artist plays shows
+function TouringPaceCard({ touringPace }) {
+  const hasPace = touringPace && typeof touringPace.daysBetweenShows === 'number';
+  return (
+    <div className="stat-card">
+      <h3>Touring Pace</h3>
+      {touringPace ? (
+        <>
+          {hasPace && (
+            <>
+              <p>Every {touringPace.daysBetweenShows.toFixed(1)} days</p>
+              <small className="stat-caption">a show on average</small>
+            </>
+          )}
+          <ul className="stat-details">
+            <li>{touringPace.shows} {touringPace.shows === 1 ? 'show' : 'shows'} analyzed</li>
+            <li>From {formatDate(touringPace.firstDate)} to {formatDate(touringPace.lastDate)}</li>
+          </ul>
+        </>
+      ) : (
+        <p>Touring data unavailable</p>
+      )}
+    </div>
+  );
+}
+
 //card showing how much the artist's shows repeat each other
 function ConsistencyCard({ consistency }) {
   const hasRepeatRate = consistency && typeof consistency.repeatRate === 'number';
@@ -50,7 +100,7 @@ function ConsistencyCard({ consistency }) {
   );
 }
 
-function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, consistency, transitions, bustouts, artistName, range }) {
+function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, consistency, transitions, bustouts, showLengths, touringPace, rotation, newSongs, artistName, range }) {
   const rangeText = range === "all" ? "entire setlist history" : `last ${range} shows`;
 
   return (
@@ -100,13 +150,28 @@ function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, consi
           )}
         </div>
 
+        <ShowLengthsCard showLengths={showLengths} />
+        <TouringPaceCard touringPace={touringPace} />
         <ConsistencyCard consistency={consistency} />
+
         <SongListCard title="Signature Transitions" songs={transitions} emptyText="No song pairs repeated in this range" />
         <SongListCard
           title="Biggest Bust-outs"
           songs={bustouts}
           emptyText="No long-absent songs returned in this range"
           formatCount={(count) => `back after ${count} shows`}
+        />
+        <SongListCard
+          title="In Rotation"
+          songs={rotation}
+          emptyText="Not enough shows to spot rotating songs"
+          formatCount={(count) => `${count}% of shows`}
+        />
+        <SongListCard
+          title="New in the Set"
+          songs={newSongs}
+          emptyText="No new songs in the latest shows"
+          formatCount={(count) => `${count}x since added`}
         />
       </div>
     </div>
