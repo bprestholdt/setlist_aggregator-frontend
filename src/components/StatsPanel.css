@@ -66,15 +66,17 @@
   margin-top: 1.75rem;
 }
 
-/*section headings use the same Bangers font as the page title*/
+/*section headings: clean uppercase in the page's regular font, with the title's orange glow*/
 .section-title {
-  font-family: 'Bangers', cursive;
-  font-size: 2rem;
-  font-weight: normal;
-  letter-spacing: 1.5px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
   margin: 0 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
-  text-shadow: 0 0 12px rgba(255, 80, 0, 0.55), 0 0 20px rgba(255, 140, 0, 0.2);
+  text-shadow: 0 0 12px rgba(255, 80, 0, 0.45);
 }
 
 /*6-card sections: 3 across on wide screens, 2 across on tablets, 1 on phones, so rows always fill evenly*/

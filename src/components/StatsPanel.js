@@ -182,7 +182,7 @@ function StatsPanel({ stats, artistName, range }) {
             <RankedCard title="Most Played Covers" items={stats.covers} emptyText="No covers in this range" />
             <RankedCard title="In Rotation" items={stats.rotation} emptyText="Not enough shows to spot rotating songs" formatCount={(count) => `${count}% of shows`} />
             <RankedCard title="New in the Set" items={stats.newSongs} emptyText="No new songs in the latest shows" formatCount={(count) => `${count}x since added`} />
-            <RankedCard title="Biggest Bust-outs" items={stats.bustouts} emptyText="No long-absent songs returned" formatCount={(count) => `back after ${count} shows`} />
+            <RankedCard title="Comebacks" items={stats.bustouts} emptyText="No songs came back after a long break" formatCount={(count) => `back after ${count} shows`} />
           </StatsSection>
 
           <StatsSection title="How the Show Runs">
