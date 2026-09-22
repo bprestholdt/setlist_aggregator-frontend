@@ -3,7 +3,8 @@ import './StatsPanel.css';
 import '../App.css';
 
 //one ranked song list card (encores, openers, rarest, most played share the same layout)
-function SongListCard({ title, songs, emptyText }) {
+//formatCount controls the text in parentheses after each song, e.g. "12x"
+function SongListCard({ title, songs, emptyText, formatCount = (count) => `${count}x` }) {
   return (
     <div className="stat-card">
       <h3>{title}</h3>
@@ -11,7 +12,7 @@ function SongListCard({ title, songs, emptyText }) {
         <ol>
           {songs.map((song, index) => (
             <li key={index}>
-              {song.title} ({song.count}x)
+              {song.title} ({formatCount(song.count)})
             </li>
           ))}
         </ol>
@@ -22,7 +23,34 @@ function SongListCard({ title, songs, emptyText }) {
   );
 }
 
-function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artistName, range }) {
+//card showing how much the artist's shows repeat each other
+function ConsistencyCard({ consistency }) {
+  const hasRepeatRate = consistency && typeof consistency.repeatRate === 'number';
+  return (
+    <div className="stat-card">
+      <h3>Setlist Consistency</h3>
+      {consistency ? (
+        <>
+          {hasRepeatRate && (
+            <>
+              <p>{Math.round(consistency.repeatRate)}% repeat</p>
+              <small className="stat-caption">of each show's songs were also played at the previous show</small>
+            </>
+          )}
+          <ul className="stat-details">
+            <li>{consistency.coreSongs} songs played at 90%+ of shows</li>
+            <li>{consistency.uniqueSongs} different songs overall</li>
+            <li>{consistency.oneOffs} played at only one show</li>
+          </ul>
+        </>
+      ) : (
+        <p>Consistency data unavailable</p>
+      )}
+    </div>
+  );
+}
+
+function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, consistency, transitions, bustouts, artistName, range }) {
   const rangeText = range === "all" ? "entire setlist history" : `last ${range} shows`;
 
   return (
@@ -71,6 +99,15 @@ function StatsPanel({ averageLength, encores, rarest, openers, mostPlayed, artis
             <p>Average setlist length not available</p>
           )}
         </div>
+
+        <ConsistencyCard consistency={consistency} />
+        <SongListCard title="Signature Transitions" songs={transitions} emptyText="No song pairs repeated in this range" />
+        <SongListCard
+          title="Biggest Bust-outs"
+          songs={bustouts}
+          emptyText="No long-absent songs returned in this range"
+          formatCount={(count) => `back after ${count} shows`}
+        />
       </div>
     </div>
   );

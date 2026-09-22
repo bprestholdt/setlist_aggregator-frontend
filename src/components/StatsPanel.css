@@ -51,6 +51,28 @@
   letter-spacing: 1px;
 }
 
+/*4 columns on wide screens so the 8 cards fill two even rows*/
+@media (min-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/*small explanation under a big number*/
+.stat-caption {
+  display: block;
+  margin-top: -1.25rem;
+  margin-bottom: 0.75rem;
+  color: #ddd;
+}
+
+/*plain supporting lines under a big number*/
+.stat-card ul.stat-details {
+  list-style: none;
+  padding-left: 0;
+  text-align: left;
+}
+
 .stat-card p {
   font-size: 2rem;
   font-weight: bold;

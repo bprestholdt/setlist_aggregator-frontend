@@ -45,6 +45,9 @@ function ResultsPage() {
   const [averageLength, setAverageLength] = useState(null);
   const [openers, setOpeners] = useState([]);
   const [mostPlayed, setMostPlayed] = useState([]);
+  const [consistency, setConsistency] = useState(null);
+  const [transitions, setTransitions] = useState([]);
+  const [bustouts, setBustouts] = useState([]);
 
   //hook that runs the fetch when URL changes
   useEffect(() => {
@@ -70,6 +73,9 @@ function ResultsPage() {
       setOpeners([]);
       setMostPlayed([]);
       setAverageLength(null);
+      setConsistency(null);
+      setTransitions([]);
+      setBustouts([]);
 
       try {
         //send GET req to consolidated backend API endpoint using env variable that handles local vs deployment
@@ -90,6 +96,9 @@ function ResultsPage() {
         setRarest(Array.isArray(data.rarest) ? data.rarest : []);
         setOpeners(Array.isArray(data.openers) ? data.openers : []);
         setMostPlayed(Array.isArray(data.mostPlayed) ? data.mostPlayed : []);
+        setConsistency(data.consistency && typeof data.consistency === 'object' ? data.consistency : null);
+        setTransitions(Array.isArray(data.transitions) ? data.transitions : []);
+        setBustouts(Array.isArray(data.bustouts) ? data.bustouts : []);
         const avg = parseFloat(data.averageLength);
         setAverageLength(!isNaN(avg) ? avg : null);
       }
@@ -242,6 +251,9 @@ function ResultsPage() {
               openers={openers}
               rarest={rarest}
               mostPlayed={mostPlayed}
+              consistency={consistency}
+              transitions={transitions}
+              bustouts={bustouts}
               artistName={artist}
               range={range}
             />
