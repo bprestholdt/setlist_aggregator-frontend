@@ -1,7 +1,7 @@
 import React from 'react';
 import './Slideshow.css';
 
-function Slideshow({ current }) {
+function Slideshow({ current, onLoad }) {
 
   return (
       <div
@@ -16,8 +16,11 @@ function Slideshow({ current }) {
         }}
       >
         {/*fullscreen image with scaling*/}
+        {/*decoding sync: the next photo is already downloaded and decoded before it's shown, so it paints in the same frame as its caption*/}
         <img
           src={current.src}
+          onLoad={onLoad}
+          decoding="sync"
           alt={`${current.artist} concert`}
           style={{
             width: '100%',

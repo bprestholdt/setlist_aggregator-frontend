@@ -1,7 +1,7 @@
 //new page to extract the statspanel logic into its own page
 //reads artist, range from URL, fetches all stats and renders the stat panel
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import StatsPanel from '../components/StatsPanel';
 import SetlistFMCredit from '../components/SetlistFMCredit';
 
@@ -22,6 +22,7 @@ function ResultsPage() {
     //get paramaters and location from react router
     const [params] = useSearchParams();
     const location = useLocation();
+    const navigate = useNavigate();
 
     //extract artist,range once for rendering
     const artist = params.get('artist');
@@ -33,6 +34,10 @@ function ResultsPage() {
 
   //show loading while data being fetched
   const [loading, setLoading] = useState(false);
+  //true if the request is taking long enough that the server is probably waking up
+  const [slowLoad, setSlowLoad] = useState(false);
+  //true if the stats request failed, so we show a message instead of empty stat cards
+  const [error, setError] = useState(false);
 
   //store results from backend in arrays
   const [encores, setEncores] = useState([]);
@@ -52,9 +57,14 @@ function ResultsPage() {
             return;
           }
 
+    //after 8 seconds of loading, explain the wait (free hosting sleeps when idle and takes up to a minute to wake)
+    const slowTimer = setTimeout(() => setSlowLoad(true), 8000);
+
     async function fetchStats() {
       //set loading when function called and clear stats from last fetch
       setLoading(true);
+      setSlowLoad(false);
+      setError(false);
       setEncores([]);
       setRarest([]);
       setOpeners([]);
@@ -63,7 +73,8 @@ function ResultsPage() {
 
       try {
         //send GET req to consolidated backend API endpoint using env variable that handles local vs deployment
-        const result = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/setlists/stats?artist=${artist}&setlistRange=${range}`);
+        //encode the artist so names with &, #, + etc. reach the backend intact
+        const result = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/setlists/stats?artist=${encodeURIComponent(artist)}&setlistRange=${encodeURIComponent(range)}`);
 
         //check and parse JSON response
         if (!result.ok) {
@@ -84,10 +95,13 @@ function ResultsPage() {
       }
       catch (err) {
         console.error("error fetching deez stats. ughhhh.", err);
+        setError(true);
       }
       finally {
         //hide loading regardless of response
+        clearTimeout(slowTimer);
         setLoading(false);
+        setSlowLoad(false);
       }
     }
 
@@ -117,6 +131,9 @@ function ResultsPage() {
     //call it immediately when page loads
     fetchStats();
     fetchArtistImage();
+
+    //stop the slow-load timer if the user leaves before the request finishes
+    return () => clearTimeout(slowTimer);
   }, [location, params]); //run API fetch again if URL changes any parameter
 
   //return full page styled container holding results
@@ -163,6 +180,14 @@ function ResultsPage() {
         </div>
       )}
 
+      {/* shown if loading takes a while, which usually means the free server is waking up */}
+      {loading && slowLoad && (
+        <p style={{ textAlign: 'center', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', padding: '0 1rem' }}>
+          Still working. If nobody has searched in a while, the server takes up to a minute to wake up.
+          All-time stats for a new artist can take longer.
+        </p>
+      )}
+
       {/* after loading complete, pass stats as props to StatsPanel component */}
       {!loading && artist && (
         <>
@@ -173,7 +198,7 @@ function ResultsPage() {
           boxSizing: 'border-box'
          }}>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate('/')}
             style={{
               padding: '0.5rem 1.25rem',
               fontSize: '1rem',
@@ -190,15 +215,37 @@ function ResultsPage() {
           </button>
         </div>
 
-          <StatsPanel
-            averageLength={averageLength}
-            encores={encores}
-            openers={openers}
-            rarest={rarest}
-            mostPlayed={mostPlayed}
-            artistName={artist}
-            range={range}
-          />
+          {error ? (
+            //request failed: say so instead of showing every stat as unavailable
+            <div style={{ textAlign: 'center', margin: '4rem auto', maxWidth: '600px', padding: '0 1rem' }}>
+              <h2>Couldn't load stats right now</h2>
+              <p>The stats server didn't respond. Please try again in a minute.</p>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  fontSize: '1rem',
+                  backgroundColor: '#4444ff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                }}
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <StatsPanel
+              averageLength={averageLength}
+              encores={encores}
+              openers={openers}
+              rarest={rarest}
+              mostPlayed={mostPlayed}
+              artistName={artist}
+              range={range}
+            />
+          )}
           <div style = {{ textAlign: 'center', marginTop: '2rem' }}>
           <SetlistFMCredit />
           </div>

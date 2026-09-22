@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDebounce } from './useDebounce';
 import './SearchBar.css';
 
 
@@ -13,9 +12,6 @@ function SearchBar() {
   //store artist input from user
   const [artistName, setArtistName] = useState('');
 
-  const debouncedArtist = useDebounce(artistName, 300);
-
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,12 +23,16 @@ function SearchBar() {
     sessionStorage.setItem('lastArtistInput', artistName);
   }, [artistName]);
 
-  //trigger on search click
-    const handleSearch = () => {
-      if (!debouncedArtist.trim()) return;
+  //trigger on search click or Enter key (form submit)
+    const handleSearch = (e) => {
+      //stop the form from reloading the page
+      e.preventDefault();
+      //trim so " radiohead " and "radiohead" are the same search
+      const trimmedArtist = artistName.trim();
+      if (!trimmedArtist) return;
 
       //navigate to ResultsPage and pass artist and range as URL parameters
-      navigate(`/results?artist=${encodeURIComponent(artistName)}&range=${range}`);
+      navigate(`/results?artist=${encodeURIComponent(trimmedArtist)}&range=${range}`);
     };
 
   return (
@@ -54,8 +54,9 @@ function SearchBar() {
         paddingBottom: '90px',
       }}
     >
-    {/*block for search input ui*/}
-      <div
+    {/*block for search input ui- a form so pressing Enter searches*/}
+      <form
+        onSubmit={handleSearch}
         className="search-bar-container"
         style={{
         marginBottom: '0rem'
@@ -83,10 +84,10 @@ function SearchBar() {
         </select>
 
         {/*search button that triggers the redirect to results*/}
-        <button onClick={handleSearch} className="search-button">
+        <button type="submit" className="search-button">
           Search
         </button>
-      </div>
+      </form>
       </div>
   );
 }

@@ -1,70 +1,47 @@
-# Getting Started with Create React App
+# Setlist Aggregator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Search any artist and see statistics from their concert setlists: most played songs, top openers, top encores, rarest songs, and the average number of songs per show. You can look at their last 20 shows, last 100 shows, or their entire history.
 
-## Available Scripts
+**Live site:** https://setlist-aggregator-frontend.vercel.app
 
-In the project directory, you can run:
+This repo is the React frontend. The Spring Boot + PostgreSQL backend is at [setlist_aggregator-backend](https://github.com/bprestholdt/setlist_aggregator-backend).
 
-### `npm start`
+## How it works
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. You enter an artist and a range on the home page.
+2. The backend looks the artist up on MusicBrainz to get their unique ID, so names like "Future" resolve to the right artist.
+3. It pulls that artist's setlists from the Setlist.fm API page by page and saves them to PostgreSQL, so later searches come from the database instead of the API.
+4. It calculates the stats and returns them in one response, which the results page displays over a background built from the artist's Last.fm image (or a color gradient generated from their name).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech
 
-### `npm test`
+- React 19, React Router
+- Deployed on Vercel
+- Backend: Java 17, Spring Boot, Spring Data JPA, PostgreSQL
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Running locally
 
-### `npm run build`
+Requires Node.js and a running copy of the backend.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Create a `.env` file in the project root:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+REACT_APP_API_BASE_URL=http://localhost:8080
+REACT_APP_LASTFM_API_KEY=your-lastfm-api-key
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Then:
 
-### `npm run eject`
+```
+npm install
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The app runs at http://localhost:3000.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Credits
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Setlist data from [Setlist.fm](https://www.setlist.fm)
+- Artist lookup from [MusicBrainz](https://musicbrainz.org)
+- Artist images from [Last.fm](https://www.last.fm)
+- Home page concert photos are from Wikimedia Commons and Flickr under Creative Commons licenses; each photo's credit and license is shown in its caption

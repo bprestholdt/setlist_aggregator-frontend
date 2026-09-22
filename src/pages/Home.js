@@ -28,20 +28,43 @@ function Home() {
   //shuffle images once on initial load
   const [shuffledImages] = useState(() => shuffleArray(images));
   const [index, setIndex] = useState(0);
+  //hide the caption until the first photo has loaded so it never describes a photo that isn't on screen yet
+  const [firstPhotoLoaded, setFirstPhotoLoaded] = useState(false);
 
+  //advance the slideshow only once BOTH the display time has passed AND the next photo is fully loaded
+  //before, the caption changed on a fixed timer while the large photo was still downloading,
+  //so the caption and photo could show different artists (and a slow load could skip a slide)
   useEffect(() => {
-      const interval = setInterval(() => {
-        setIndex((i) => (i + 1) % shuffledImages.length);
-      }, 4300); //change every 4 seconds
-      return () => clearInterval(interval);
-    }, [shuffledImages]);
+    let cancelled = false;
+    let timer;
+    const nextIndex = (index + 1) % shuffledImages.length;
+
+    //start downloading the next photo in the background right away
+    const nextImage = new Image();
+    nextImage.src = shuffledImages[nextIndex].src;
+    //decode() resolves once the photo is ready to paint; a failed load still lets the slideshow move on
+    const photoReady = nextImage.decode().catch(() => {});
+
+    const displayTimeDone = new Promise((resolve) => {
+      timer = setTimeout(resolve, 4300); //change every 4 seconds
+    });
+
+    Promise.all([photoReady, displayTimeDone]).then(() => {
+      if (!cancelled) setIndex(nextIndex);
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [index, shuffledImages]);
 
     const current = shuffledImages[index];
 
   return (
     <div style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
       {/*full-screen rotating slideshow in background*/}
-      <Slideshow current = {current} />
+      <Slideshow current = {current} onLoad={() => setFirstPhotoLoaded(true)} />
 
       {/*overlay on top of slideshow*/}
       <div
@@ -87,6 +110,7 @@ function Home() {
       </div>
 
       {/*caption at bottom right is now clickable*/}
+            {firstPhotoLoaded && (
             <div
               className="slideshow-caption"
               style={{
@@ -117,6 +141,7 @@ function Home() {
                 />
               )}
             </div>
+            )}
     </div>
   );
 }
