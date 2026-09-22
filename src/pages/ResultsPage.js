@@ -39,19 +39,8 @@ function ResultsPage() {
   //true if the stats request failed, so we show a message instead of empty stat cards
   const [error, setError] = useState(false);
 
-  //store results from backend in arrays
-  const [encores, setEncores] = useState([]);
-  const [rarest, setRarest] = useState([]);
-  const [averageLength, setAverageLength] = useState(null);
-  const [openers, setOpeners] = useState([]);
-  const [mostPlayed, setMostPlayed] = useState([]);
-  const [consistency, setConsistency] = useState(null);
-  const [transitions, setTransitions] = useState([]);
-  const [bustouts, setBustouts] = useState([]);
-  const [showLengths, setShowLengths] = useState(null);
-  const [touringPace, setTouringPace] = useState(null);
-  const [rotation, setRotation] = useState([]);
-  const [newSongs, setNewSongs] = useState([]);
+  //every stat from the backend in one object (summary numbers plus ranked lists), null until loaded
+  const [stats, setStats] = useState(null);
 
   //hook that runs the fetch when URL changes
   useEffect(() => {
@@ -72,18 +61,7 @@ function ResultsPage() {
       setLoading(true);
       setSlowLoad(false);
       setError(false);
-      setEncores([]);
-      setRarest([]);
-      setOpeners([]);
-      setMostPlayed([]);
-      setAverageLength(null);
-      setConsistency(null);
-      setTransitions([]);
-      setBustouts([]);
-      setShowLengths(null);
-      setTouringPace(null);
-      setRotation([]);
-      setNewSongs([]);
+      setStats(null);
 
       try {
         //send GET req to consolidated backend API endpoint using env variable that handles local vs deployment
@@ -99,20 +77,8 @@ function ResultsPage() {
 
         const data = await result.json();
 
-        //store response data in the state using values returned from backend
-        setEncores(Array.isArray(data.encores) ? data.encores : []);
-        setRarest(Array.isArray(data.rarest) ? data.rarest : []);
-        setOpeners(Array.isArray(data.openers) ? data.openers : []);
-        setMostPlayed(Array.isArray(data.mostPlayed) ? data.mostPlayed : []);
-        setConsistency(data.consistency && typeof data.consistency === 'object' ? data.consistency : null);
-        setTransitions(Array.isArray(data.transitions) ? data.transitions : []);
-        setBustouts(Array.isArray(data.bustouts) ? data.bustouts : []);
-        setShowLengths(data.showLengths && typeof data.showLengths === 'object' ? data.showLengths : null);
-        setTouringPace(data.touringPace && typeof data.touringPace === 'object' ? data.touringPace : null);
-        setRotation(Array.isArray(data.rotation) ? data.rotation : []);
-        setNewSongs(Array.isArray(data.newSongs) ? data.newSongs : []);
-        const avg = parseFloat(data.averageLength);
-        setAverageLength(!isNaN(avg) ? avg : null);
+        //store the response; StatsPanel checks each piece before showing it
+        setStats(data && typeof data === 'object' ? data : {});
       }
       catch (err) {
         console.error("error fetching deez stats. ughhhh.", err);
@@ -257,22 +223,7 @@ function ResultsPage() {
               </button>
             </div>
           ) : (
-            <StatsPanel
-              averageLength={averageLength}
-              encores={encores}
-              openers={openers}
-              rarest={rarest}
-              mostPlayed={mostPlayed}
-              consistency={consistency}
-              transitions={transitions}
-              bustouts={bustouts}
-              showLengths={showLengths}
-              touringPace={touringPace}
-              rotation={rotation}
-              newSongs={newSongs}
-              artistName={artist}
-              range={range}
-            />
+            <StatsPanel stats={stats} artistName={artist} range={range} />
           )}
           <div style = {{ textAlign: 'center', marginTop: '2rem' }}>
           <SetlistFMCredit />

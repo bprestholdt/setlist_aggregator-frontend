@@ -1,12 +1,108 @@
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 100%; /* use full screen width */
+/*results page layout: summary strip, then titled sections of cards*/
+.stats-body {
+  max-width: 1500px;
   margin: 0 auto;
+  padding: 0.5rem 1.5rem 0;
   box-sizing: border-box;
 }
+
+/* ---------- summary strip ---------- */
+
+/*8 tiles: 8 across on wide screens, 4 across (two rows) on laptops/tablets, 2 across on phones*/
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0 0.5rem;
+}
+
+@media (min-width: 700px) {
+  .summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .summary-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+.summary-tile {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(1px);
+  border-radius: 12px;
+  padding: 0.9rem 0.75rem;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+  animation: fadeIn 0.6s ease-in;
+}
+
+.summary-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  line-height: 1.2;
+}
+
+.summary-label {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #a8d0ff;
+}
+
+.summary-detail {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+/* ---------- sections ---------- */
+
+.stats-section {
+  margin-top: 1.75rem;
+}
+
+/*section headings use the same Bangers font as the page title*/
+.section-title {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  font-weight: normal;
+  letter-spacing: 1.5px;
+  margin: 0 0 0.75rem;
+  color: white;
+  text-shadow: 0 0 12px rgba(255, 80, 0, 0.55), 0 0 20px rgba(255, 140, 0, 0.2);
+}
+
+/*6-card sections: 3 across on wide screens, 2 across on tablets, 1 on phones, so rows always fill evenly*/
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  /*lets a smaller card fill the gap next to a wide one*/
+  grid-auto-flow: dense;
+}
+
+@media (min-width: 700px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /*wide cards (tours) take two columns*/
+  .wide-card {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- cards ---------- */
 
 .stat-card {
 /*semi transparent black background*/
@@ -14,23 +110,12 @@
   backdrop-filter: blur(1px);
   color: white;
   border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1rem;
+  padding: 1.25rem 1.5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
   transition: transform 0.3s ease;
   animation: fadeIn 0.6s ease-in;
+  min-width: 0;
 }
-.stat-card ol {
-  padding-left: 1.25rem;
-  text-align: left;
-  list-style-position: inside;
-}
-
-.stat-card li {
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 
 .stat-card:hover {
   transform: translateY(-4px);
@@ -41,40 +126,71 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-
 .stat-card h3 {
-  font-size: 1.3rem;
-  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem 0;
   color: #a8d0ff;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-/*4 columns on wide screens so the 8 cards fill two even rows*/
-@media (min-width: 1200px) {
-  .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/*small explanation under a big number*/
-.stat-caption {
-  display: block;
-  margin-top: -1.25rem;
-  margin-bottom: 0.75rem;
-  color: #ddd;
-}
-
-/*plain supporting lines under a big number*/
-.stat-card ul.stat-details {
+/*ranked lists: number and name on the left, count right-aligned so the column is easy to scan*/
+.ranked-list {
   list-style: none;
-  padding-left: 0;
+  margin: 0;
+  padding: 0;
   text-align: left;
 }
 
-.stat-card p {
-  font-size: 2rem;
-  font-weight: bold;
-  color: white;
+.ranked-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ranked-number {
+  color: #a8d0ff;
+  margin-right: 0.15rem;
+}
+
+.ranked-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ranked-count {
+  flex-shrink: 0;
+  color: #ddd;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/*tours: name on one line, details under it*/
+.tour-list li {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.tour-meta {
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.stat-empty {
+  color: #ccc;
+  font-style: italic;
+  margin: 0;
+}
+
+.stats-none {
+  text-align: center;
+  font-size: 1.25rem;
+  margin: 3rem auto;
+  max-width: 600px;
+  padding: 0 1rem;
 }
